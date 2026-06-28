@@ -189,10 +189,30 @@
   border-top: 1px solid var(--line);
   color: var(--faint);
   font-size: 12.5px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footLinks a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 12.5px;
+}
+.footLinks a:hover {
+  color: var(--text);
 }
 
 @media (max-width: 640px) {
   .features {
     grid-template-columns: 1fr;
+  }
+  .footLinks {
+    order: 3;
+    width: 100%;
   }
 }

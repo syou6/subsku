@@ -1,0 +1,119 @@
+.page {
+  --bg: #13100e;
+  --surface: #211a15;
+  --line: #3a2e25;
+  --text: #f3ece3;
+  --dim: #a99c8c;
+  --faint: #6f6256;
+  --ember: #d9602e;
+  --ember-hi: #f2a33c;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  padding: 0 20px 80px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 22px 0;
+}
+
+.mark {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--ember-hi);
+}
+
+.back {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 14px;
+}
+.back:hover {
+  color: var(--text);
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-top: 16px;
+}
+
+.h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: 0.02em;
+}
+
+.updated {
+  color: var(--faint);
+  font-size: 13px;
+  margin-bottom: 32px;
+}
+
+.h2 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 32px 0 10px;
+  color: var(--ember-hi);
+  letter-spacing: 0.02em;
+}
+
+.body p,
+.body li {
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--dim);
+}
+
+.body p {
+  margin: 0 0 12px;
+}
+
+.body ul {
+  margin: 0 0 12px;
+  padding-left: 1.2em;
+}
+
+.body a {
+  color: var(--ember-hi);
+}
+
+.todo {
+  color: #f2a33c;
+  background: rgba(217, 96, 46, 0.12);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 13px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 16px;
+}
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.table th {
+  width: 38%;
+  color: var(--text);
+  background: var(--surface);
+  font-weight: 600;
+}
+.table td {
+  color: var(--dim);
+}

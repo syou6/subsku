@@ -73,7 +73,12 @@ export default async function LandingPage() {
 
       <footer className={styles.foot}>
         <span className={styles.mark}>BURN</span>
-        <span>© {new Date().getFullYear()} Burn</span>
+        <nav className={styles.footLinks}>
+          <Link href="/terms">利用規約</Link>
+          <Link href="/privacy">プライバシーポリシー</Link>
+          <Link href="/tokushoho">特定商取引法に基づく表記</Link>
+        </nav>
+        <span>© {new Date().getFullYear()} 合同会社AMOR</span>
       </footer>
     </main>
   )
