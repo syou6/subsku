@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getSession } from '@/lib/auth'
 import { burnDataSchema } from '@/lib/schema'
+import { subLimitFor } from '@/lib/plan'
 import { EMPTY_BURN_DATA } from '@/types'
 
 // GET /api/data — return the signed-in user's persisted Burn state.
@@ -28,11 +30,8 @@ export async function GET() {
 
 // PUT /api/data — validate and upsert the user's Burn state.
 export async function PUT(request: Request) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  const session = await getSession()
+  if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   let body: unknown
   try {
@@ -49,9 +48,15 @@ export async function PUT(request: Request) {
     )
   }
 
+  // Anti-bypass: enforce the free-tier sub cap server-side too.
+  if (parsed.data.subs.length > subLimitFor(session.plan)) {
+    return NextResponse.json({ error: 'sub_limit' }, { status: 402 })
+  }
+
+  const supabase = await createClient()
   const { error } = await supabase
     .from('burn_state')
-    .upsert({ user_id: user.id, data: parsed.data }, { onConflict: 'user_id' })
+    .upsert({ user_id: session.userId, data: parsed.data }, { onConflict: 'user_id' })
 
   if (error) {
     return NextResponse.json({ error: 'save_failed' }, { status: 500 })

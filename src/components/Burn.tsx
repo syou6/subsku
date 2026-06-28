@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { FREE_SUB_LIMIT } from '@/lib/plan'
 import type {
   BurnData,
   Currency,
@@ -115,6 +116,8 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
   const fileRef = useRef<HTMLInputElement>(null)
 
   const isPro = plan === 'pro'
+  // Free tier caps tracked subscriptions; at the cap, adds become an upsell.
+  const atSubLimit = !isPro && subs.length >= FREE_SUB_LIMIT
 
   // 連携 state
   const [stripeState, setStripeState] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
@@ -224,8 +227,21 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
       .sort((a, b) => b.val - a.val)
   }, [subs, usd, eur])
 
+  /* ----- billing: 買い切り Payment Link ----- */
+  // Send the user to the hosted Stripe Payment Link. client_reference_id carries
+  // the Supabase user id so the webhook knows whose plan to flip after payment.
+  const startCheckout = () => {
+    if (!paymentLink) return
+    setBillingBusy(true)
+    const url = new URL(paymentLink)
+    url.searchParams.set('client_reference_id', userId)
+    if (email) url.searchParams.set('prefilled_email', email)
+    window.location.href = url.toString()
+  }
+
   /* actions */
-  const addPreset = (p: Preset) =>
+  const addPreset = (p: Preset) => {
+    if (atSubLimit) return startCheckout()
     setSubs((s) => [
       ...s,
       {
@@ -241,9 +257,11 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
         account: '',
       },
     ])
+  }
   const addCustom = () => {
     const amt = parseFloat(ca)
     if (!cn.trim() || !(amt > 0)) return
+    if (atSubLimit) return startCheckout()
     setSubs((s) => [
       ...s,
       {
@@ -287,17 +305,6 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
     setSubs((s) => s.map((x) => (x.projectId === id ? { ...x, projectId: '' } : x)))
   }
 
-  /* ----- billing: 買い切り Payment Link ----- */
-  // Send the user to the hosted Stripe Payment Link. client_reference_id carries
-  // the Supabase user id so the webhook knows whose plan to flip after payment.
-  const startCheckout = () => {
-    if (!paymentLink) return
-    setBillingBusy(true)
-    const url = new URL(paymentLink)
-    url.searchParams.set('client_reference_id', userId)
-    if (email) url.searchParams.set('prefilled_email', email)
-    window.location.href = url.toString()
-  }
   const logout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -944,6 +951,17 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
             </div>
           </div>
         )}
+        {atSubLimit ? (
+          <button className="burn-limit" onClick={startCheckout} disabled={billingBusy}>
+            🔥 無料は{FREE_SUB_LIMIT}件まで。<b>Proで無制限に（買い切り）</b> — タップで購入
+          </button>
+        ) : (
+          !isPro && (
+            <div className="burn-limit-note">
+              無料プラン：あと <b>{FREE_SUB_LIMIT - subs.length}</b> 件 追加できる（全{FREE_SUB_LIMIT}件）
+            </div>
+          )
+        )}
         <div className="burn-chips">
           {PRESETS.map((p) => (
             <button key={p.name} className="burn-chip" onClick={() => addPreset(p)}>
@@ -1379,6 +1397,11 @@ select.burn-in{ cursor:pointer; }
 .burn-add{ font-family:var(--font); font-size:14px; font-weight:600; color:#1a120c; background:linear-gradient(100deg,var(--ember-hi),var(--ember)); border:0; border-radius:9px; padding:9px 16px; cursor:pointer; transition:.14s; }
 .burn-add:hover{ filter:brightness(1.07); } .burn-add:disabled{ opacity:.4; cursor:default; filter:none; }
 .burn-add.green{ background:linear-gradient(100deg,var(--green),#3f9e78); color:#0d1813; }
+
+.burn-limit{ display:block; width:100%; font-family:var(--font); font-size:14px; text-align:center; color:#f2a33c; background:linear-gradient(100deg,rgba(217,96,46,.16),rgba(242,163,60,.1)); border:1px solid rgba(217,96,46,.5); border-radius:12px; padding:12px 14px; margin-bottom:12px; cursor:pointer; transition:.14s; }
+.burn-limit:hover{ filter:brightness(1.08); border-color:#d9602e; } .burn-limit:disabled{ opacity:.5; cursor:default; }
+.burn-limit b{ color:#f8c879; }
+.burn-limit-note{ font-size:12px; color:var(--faint); margin-bottom:10px; } .burn-limit-note b{ color:var(--text); }
 
 .burn-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
 .burn-chip{ font-family:var(--font); font-size:13px; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 13px; cursor:pointer; transition:.14s; white-space:nowrap; }
