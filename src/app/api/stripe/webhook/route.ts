@@ -6,9 +6,10 @@ import { env } from '@/lib/env'
 
 export const runtime = 'nodejs'
 
-// POST /api/stripe/webhook — source of truth for plan changes. Verifies the
-// signature, then flips profiles.plan based on subscription state. Uses the
-// service-role client because the request has no user session.
+// POST /api/stripe/webhook — source of truth for the one-time (買い切り) Pro
+// purchase. Verifies the signature, then on a paid checkout flips the buyer's
+// plan to 'pro' for life. The buyer is identified by client_reference_id, which
+// the client appends to the Payment Link URL (= the Supabase user id).
 export async function POST(request: Request) {
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')
@@ -22,60 +23,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_signature' }, { status: 400 })
   }
 
-  const admin = createAdminClient()
-
-  async function setPlanByCustomer(
-    customerId: string,
-    plan: 'free' | 'pro',
-    subscriptionId: string | null,
-    periodEnd: number | null,
-  ) {
-    await admin
-      .from('profiles')
-      .update({
-        plan,
-        stripe_subscription_id: subscriptionId,
-        current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
-      })
-      .eq('stripe_customer_id', customerId)
-  }
-
   try {
-    switch (event.type) {
-      case 'checkout.session.completed': {
-        const s = event.data.object as Stripe.Checkout.Session
-        const customerId = typeof s.customer === 'string' ? s.customer : s.customer?.id
-        const userId = (s.metadata?.user_id as string) || s.client_reference_id || null
-        // Ensure the customer id is linked to the user (in case checkout created it).
-        if (customerId && userId) {
-          await admin
-            .from('profiles')
-            .update({ stripe_customer_id: customerId })
-            .eq('id', userId)
-        }
-        if (customerId) {
-          const subId = typeof s.subscription === 'string' ? s.subscription : null
-          await setPlanByCustomer(customerId, 'pro', subId, null)
-        }
-        break
+    if (event.type === 'checkout.session.completed') {
+      const s = event.data.object as Stripe.Checkout.Session
+      const paid = s.payment_status === 'paid' || s.payment_status === 'no_payment_required'
+      const userId = s.client_reference_id || (s.metadata?.user_id as string) || null
+
+      if (paid && userId) {
+        const admin = createAdminClient()
+        const customerId = typeof s.customer === 'string' ? s.customer : (s.customer?.id ?? null)
+        await admin
+          .from('profiles')
+          .update({ plan: 'pro', stripe_customer_id: customerId })
+          .eq('id', userId)
+      } else {
+        console.warn('checkout completed but not flipped:', { paid, userId })
       }
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
-        const sub = event.data.object as Stripe.Subscription
-        const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id
-        const active = sub.status === 'active' || sub.status === 'trialing'
-        const periodEnd = (sub as unknown as { current_period_end?: number }).current_period_end ?? null
-        await setPlanByCustomer(customerId, active ? 'pro' : 'free', sub.id, periodEnd)
-        break
-      }
-      case 'customer.subscription.deleted': {
-        const sub = event.data.object as Stripe.Subscription
-        const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id
-        await setPlanByCustomer(customerId, 'free', null, null)
-        break
-      }
-      default:
-        break
     }
   } catch (err) {
     console.error('webhook handler error:', err)

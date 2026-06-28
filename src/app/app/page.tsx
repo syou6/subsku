@@ -19,11 +19,16 @@ export default async function AppPage() {
 
   const initial: BurnData = { ...EMPTY_BURN_DATA, ...((data?.data as Partial<BurnData>) ?? {}) }
 
+  // Public Payment Link — optional so the app still loads before billing is set up.
+  const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK ?? ''
+
   return (
     <Burn
       initialData={initial}
       plan={session.plan}
       email={session.email}
+      userId={session.userId}
+      paymentLink={paymentLink}
     />
   )
 }

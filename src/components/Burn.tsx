@@ -96,9 +96,11 @@ interface BurnProps {
   initialData: BurnData
   plan: Plan
   email: string | null
+  userId: string
+  paymentLink: string
 }
 
-export default function Burn({ initialData, plan, email }: BurnProps) {
+export default function Burn({ initialData, plan, email, userId, paymentLink }: BurnProps) {
   const [subs, setSubs] = useState<Sub[]>(initialData.subs)
   const [projects, setProjects] = useState<Project[]>(initialData.projects)
   const [usd, setUsd] = useState(initialData.usd)
@@ -121,7 +123,7 @@ export default function Burn({ initialData, plan, email }: BurnProps) {
   const [gmailMsg, setGmailMsg] = useState('')
   const [gmailFound, setGmailFound] = useState<(GmailHit & { _on: boolean })[]>([])
 
-  // billing state
+  // billing state — one-time (買い切り) purchase via Stripe Payment Link
   const [billingBusy, setBillingBusy] = useState(false)
 
   // sub form
@@ -285,28 +287,16 @@ export default function Burn({ initialData, plan, email }: BurnProps) {
     setSubs((s) => s.map((x) => (x.projectId === id ? { ...x, projectId: '' } : x)))
   }
 
-  /* ----- billing ----- */
-  const startCheckout = async () => {
+  /* ----- billing: 買い切り Payment Link ----- */
+  // Send the user to the hosted Stripe Payment Link. client_reference_id carries
+  // the Supabase user id so the webhook knows whose plan to flip after payment.
+  const startCheckout = () => {
+    if (!paymentLink) return
     setBillingBusy(true)
-    try {
-      const res = await fetch('/api/stripe/checkout', { method: 'POST' })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else setBillingBusy(false)
-    } catch {
-      setBillingBusy(false)
-    }
-  }
-  const openPortal = async () => {
-    setBillingBusy(true)
-    try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else setBillingBusy(false)
-    } catch {
-      setBillingBusy(false)
-    }
+    const url = new URL(paymentLink)
+    url.searchParams.set('client_reference_id', userId)
+    if (email) url.searchParams.set('prefilled_email', email)
+    window.location.href = url.toString()
   }
   const logout = async () => {
     const supabase = createClient()
@@ -508,12 +498,10 @@ export default function Burn({ initialData, plan, email }: BurnProps) {
               <span>プラン</span>
               <span>
                 {isPro ? (
-                  <button className="burn-fbtn" onClick={openPortal} disabled={billingBusy}>
-                    請求を管理（解約・領収書）
-                  </button>
+                  <b className="g">Pro（買い切り・購入済み）</b>
                 ) : (
                   <button className="burn-fbtn" onClick={startCheckout} disabled={billingBusy}>
-                    Pro にアップグレード
+                    Pro を購入（買い切り）
                   </button>
                 )}
               </span>

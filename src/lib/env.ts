@@ -20,6 +20,7 @@ export const env = {
   gmailMcpToken: () => optional('GMAIL_MCP_TOKEN'),
   stripeSecretKey: () => required('STRIPE_SECRET_KEY'),
   stripeWebhookSecret: () => required('STRIPE_WEBHOOK_SECRET'),
-  stripePricePro: () => required('STRIPE_PRICE_PRO'),
+  // Public Stripe Payment Link for the one-time (買い切り) Pro purchase.
+  stripePaymentLink: () => required('NEXT_PUBLIC_STRIPE_PAYMENT_LINK'),
   siteUrl: () => process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 }
