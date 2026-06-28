@@ -32,10 +32,11 @@ export async function POST(request: Request) {
       if (paid && userId) {
         const admin = createAdminClient()
         const customerId = typeof s.customer === 'string' ? s.customer : (s.customer?.id ?? null)
+        // Upsert (not update) so the plan still flips even if the profile row is
+        // missing — e.g. a user who signed up before the seed trigger existed.
         await admin
           .from('profiles')
-          .update({ plan: 'pro', stripe_customer_id: customerId })
-          .eq('id', userId)
+          .upsert({ id: userId, plan: 'pro', stripe_customer_id: customerId }, { onConflict: 'id' })
       } else {
         console.warn('checkout completed but not flipped:', { paid, userId })
       }
