@@ -1,0 +1,23 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #13100e;
+  color: #f3ece3;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Bricolage Grotesque', system-ui, -apple-system, 'Hiragino Kaku Gothic ProN',
+    'Noto Sans JP', sans-serif;
+}
+
+a {
+  color: inherit;
+}
