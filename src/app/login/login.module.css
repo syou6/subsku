@@ -104,10 +104,59 @@
   height: 1px;
   background: var(--line);
 }
+.tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+.tab,
+.tabOn {
+  flex: 1;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px;
+  cursor: pointer;
+  transition: 0.14s;
+  background: transparent;
+  color: var(--dim);
+}
+.tabOn {
+  background: var(--surface2);
+  color: var(--text);
+}
+.tab:hover {
+  color: var(--text);
+}
 .form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.linkBtn {
+  margin-top: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--dim);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: 0.14s;
+}
+.linkBtn:hover {
+  color: var(--ember-hi);
+}
+.linkBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .input {
   font-family: inherit;

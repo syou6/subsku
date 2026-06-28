@@ -60,9 +60,8 @@ export default function TokushohoPage() {
               <tr>
                 <th>販売価格</th>
                 <td>
-                  各商品の購入ページに表示する価格（消費税込み）。Pro プランは買い切り（一括）です。
-                  <br />
-                  <span className={styles.todo}>【要記入：Pro の税込価格】</span>
+                  Pro プラン：2,980円（税込・買い切り／一括）。
+                  最新の価格は購入ページに表示します。
                 </td>
               </tr>
               <tr>
