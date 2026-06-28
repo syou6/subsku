@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { safeNext } from '@/lib/safe-redirect'
 import styles from './login.module.css'
 
 type AuthTab = 'login' | 'signup'
@@ -11,7 +12,7 @@ type Status = 'idle' | 'busy' | 'sent' | 'error'
 function LoginInner() {
   const router = useRouter()
   const params = useSearchParams()
-  const next = params.get('next') || '/app'
+  const next = safeNext(params.get('next'))
 
   const [tab, setTab] = useState<AuthTab>('login')
   const [email, setEmail] = useState('')
