@@ -87,30 +87,13 @@ function LoginInner() {
     setMsg('ログインリンクを送った。メールを確認してな。')
   }
 
-  // ----- Google OAuth -----
-  const signInGoogle = async () => {
-    const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: redirectTo() },
-    })
-  }
-
   return (
     <main className={styles.page}>
       <div className={styles.glow} />
       <div className={styles.card}>
         <span className={styles.mark}>BURN</span>
         <h1 className={styles.h1}>ログイン / 新規登録</h1>
-        <p className={styles.sub}>メールとパスワードで。Googleやメールリンクでも入れるで。</p>
-
-        <button className={styles.google} onClick={signInGoogle} type="button">
-          <span className={styles.gIco}>G</span> Googleで続ける
-        </button>
-
-        <div className={styles.divider}>
-          <span>または</span>
-        </div>
+        <p className={styles.sub}>メールとパスワードで。メールリンクでも入れるで。</p>
 
         <div className={styles.tabs}>
           <button
