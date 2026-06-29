@@ -45,17 +45,11 @@ export default function TokushohoPage() {
               </tr>
               <tr>
                 <th>電話番号</th>
-                <td>
-                  <span className={styles.todo}>【要記入：電話番号】</span>
-                  <br />
-                  ※請求があった場合は遅滞なく開示します。
-                </td>
+                <td>090-3639-9477</td>
               </tr>
               <tr>
                 <th>メールアドレス</th>
-                <td>
-                  <span className={styles.todo}>【要記入：問い合わせ用メール】</span>
-                </td>
+                <td>info@amorjp.com</td>
               </tr>
               <tr>
                 <th>販売価格</th>

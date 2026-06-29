@@ -110,7 +110,7 @@ export default function PrivacyPage() {
           <p>
             合同会社AMOR（代表：川本翔）
             <br />
-            <span className={styles.todo}>【要記入：問い合わせ用メール】</span>
+            info@amorjp.com
           </p>
         </div>
       </div>
