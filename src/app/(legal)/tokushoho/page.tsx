@@ -37,11 +37,7 @@ export default function TokushohoPage() {
               </tr>
               <tr>
                 <th>所在地</th>
-                <td>
-                  <span className={styles.todo}>【要記入：登記上の住所】</span>
-                  <br />
-                  ※請求があった場合は遅滞なく開示します。
-                </td>
+                <td>愛知県名古屋市中村区名駅4丁目24番5号 第2森ビル401</td>
               </tr>
               <tr>
                 <th>電話番号</th>
