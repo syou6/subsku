@@ -33,7 +33,7 @@ export default async function LandingPage() {
         <p className={styles.lede}>
           ChatGPT、Claude、Cursor、Vercel……増え続けるAIツールの月額をまとめて、
           <b>バーンレート</b>・<b>ランウェイ</b>・<b>黒字化までの距離</b>を一目で。
-          GmailとStripeからの自動取り込みで、入力ゼロから始まる。
+          プリセットをタップするだけ、入力かんたん。
         </p>
         <div className={styles.actions}>
           <Link href={session ? '/app' : '/login'} className={styles.primary}>
@@ -60,9 +60,12 @@ export default async function LandingPage() {
         <div className={styles.card}>
           <div className={styles.cardIco}>⚡</div>
           <h3>
-            自動取り込み <span className={styles.pro}>PRO</span>
+            無制限プラン <span className={styles.pro}>PRO</span>
           </h3>
-          <p>Gmailの請求メールとStripeのMRRを自動で取り込み。手入力の手間をまるごと削減。</p>
+          <p>
+            無料は5件まで、Proなら無制限に登録。月額なしの買い切り。
+            Gmail・Stripeの自動取り込みも近日対応。
+          </p>
         </div>
         <div className={styles.card}>
           <div className={styles.cardIco}>🧾</div>

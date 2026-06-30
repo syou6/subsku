@@ -700,9 +700,9 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
         {/* プロダクト / 収益源 */}
         <h2 className="burn-h">プロダクト / 収益源</h2>
         <div className="burn-sync-row">
-          <button className="burn-sync stripe" onClick={importMRR} disabled={stripeState === 'loading'}>
-            {stripeState === 'loading' ? <span className="burn-spin" /> : '⚡'} StripeからMRRを取り込む
-            {!isPro && <span className="burn-lock">PRO</span>}
+          <button className="burn-sync stripe" onClick={importMRR} disabled title="近日対応">
+            ⚡ StripeからMRRを取り込む
+            <span className="burn-soon">近日対応</span>
           </button>
         </div>
         {stripeMsg && (
@@ -896,9 +896,9 @@ export default function Burn({ initialData, plan, email, userId, paymentLink }: 
         {/* ツール追加 */}
         <h2 className="burn-h">ツールを追加</h2>
         <div className="burn-sync-row">
-          <button className="burn-sync" onClick={importGmail} disabled={gmailState === 'loading'}>
-            {gmailState === 'loading' ? <span className="burn-spin" /> : '📧'} Gmailから請求を検索
-            {!isPro && <span className="burn-lock">PRO</span>}
+          <button className="burn-sync" onClick={importGmail} disabled title="近日対応">
+            📧 Gmailから請求を検索
+            <span className="burn-soon">近日対応</span>
           </button>
         </div>
         {gmailMsg && (
@@ -1357,6 +1357,7 @@ const CSS = `
 .burn-sync:disabled{ opacity:.55; cursor:default; }
 .burn-sync.stripe:hover{ border-color:var(--green); }
 .burn-lock{ font-size:9.5px; font-weight:700; letter-spacing:.06em; color:#1a120c; background:var(--ember-hi); border-radius:4px; padding:1px 5px; margin-left:2px; }
+.burn-soon{ font-size:9.5px; font-weight:700; letter-spacing:.06em; color:var(--dim); background:var(--surface2); border:1px solid var(--line2); border-radius:4px; padding:1px 5px; margin-left:2px; }
 .burn-spin{ width:14px; height:14px; border:2px solid var(--faint); border-top-color:var(--ember); border-radius:50%; animation:spin .7s linear infinite; }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 .burn-msg{ font-size:12.5px; margin:10px 2px 0; line-height:1.5; }
